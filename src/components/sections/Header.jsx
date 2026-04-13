@@ -5,7 +5,7 @@ import iconDropdown from "../../assets/images/icon-dropdown.svg";
 import UnitDropDown from "./UnitDropDown";
 
 const Header = () => {
-  const [isUnitMenuOpen, setIsUnitMenuOpen] = useState(true);
+  const [isUnitMenuOpen, setIsUnitMenuOpen] = useState(false);
 
   return (
     <header>

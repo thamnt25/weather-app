@@ -5,10 +5,96 @@
   background-repeat: no-repeat;
 }
 
+.search-autocomplete .geoapify-input-wrapper,
+.search-autocomplete .geoapify-geocoder-autocomplete-container {
+  width: 100%;
+  height: 100%;
+}
+
+.search-autocomplete .geoapify-geocoder-autocomplete-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.search-autocomplete .geoapify-input-wrapper {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  height: 100%;
+  min-width: 0;
+}
+
+.search-autocomplete .geoapify-autocomplete-input {
+  display: block;
+  margin: 0;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: normal;
+  padding: 0 2.25rem 0 0;
+  vertical-align: middle;
+}
+
+.search-autocomplete .geoapify-autocomplete-input::placeholder {
+  color: rgba(212, 212, 216, 0.9);
+}
+
+.geocoder-container {
+  width: 100%;
+}
+
+.search-autocomplete .geoapify-autocomplete-input:focus {
+  outline: none;
+}
+
+.search-autocomplete .geoapify-close-button {
+  right: 0;
+  top: 50%;
+  height: auto;
+  transform: translateY(-50%);
+  color: rgba(212, 212, 216, 0.7);
+}
+
+.search-autocomplete .geoapify-close-button:hover {
+  color: #ffffff;
+}
+
+.search-autocomplete .geoapify-autocomplete-items {
+  margin-top: 0.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(82, 82, 91, 0.7);
+  border-radius: 0.75rem;
+  background: #26263f;
+  box-shadow: 0 18px 40px rgba(3, 1, 45, 0.35);
+}
+
+.search-autocomplete .geoapify-autocomplete-items div {
+  padding: 0.75rem 1rem;
+  color: #ffffff;
+}
+
+.search-autocomplete .geoapify-autocomplete-items div:hover,
+.search-autocomplete .geoapify-autocomplete-items .active {
+  background: rgba(59, 130, 246, 0.16);
+}
+
+.search-autocomplete .geoapify-autocomplete-item .icon {
+  color: rgba(212, 212, 216, 0.7);
+}
+
+.search-autocomplete .geoapify-autocomplete-items .secondary-part {
+  color: rgba(212, 212, 216, 0.78);
+}
+
 @media screen and (min-width: 768px) {
   .hero-summary {
     background-image: url("./assets/images/bg-today-large.svg");
   }
 }
-
-

@@ -1,56 +1,40 @@
 import { useState } from "react";
-import iconCloudy from "../../assets/images/icon-overcast.webp";
 import iconDropdown from "../../assets/images/icon-dropdown.svg";
-import iconFog from "../../assets/images/icon-fog.webp";
-import iconPartlyCloudy from "../../assets/images/icon-partly-cloudy.webp";
-import iconRain from "../../assets/images/icon-rain.webp";
-import iconSunny from "../../assets/images/icon-sunny.webp";
+import {
+  getWeatherCondition,
+  getWeatherIcon,
+} from "../../schemas/WeatherSchema";
 
 const hourlyForecastByDay = {
   Tuesday: [
-    { time: "3 PM", temperature: "20°", icon: iconCloudy, condition: "Cloudy" },
-    {
-      time: "4 PM",
-      temperature: "20°",
-      icon: iconPartlyCloudy,
-      condition: "Partly cloudy",
-    },
-    { time: "5 PM", temperature: "20°", icon: iconSunny, condition: "Sunny" },
-    { time: "6 PM", temperature: "19°", icon: iconCloudy, condition: "Cloudy" },
-    { time: "7 PM", temperature: "18°", icon: iconRain, condition: "Rain" },
-    { time: "8 PM", temperature: "18°", icon: iconFog, condition: "Fog" },
-    { time: "9 PM", temperature: "17°", icon: iconRain, condition: "Rain" },
-    { time: "10 PM", temperature: "17°", icon: iconCloudy, condition: "Cloudy" },
+    { time: "3 PM", temperature: "20°", weatherCode: 3, isDay: 1 },
+    { time: "4 PM", temperature: "20°", weatherCode: 2, isDay: 1 },
+    { time: "5 PM", temperature: "20°", weatherCode: 0, isDay: 1 },
+    { time: "6 PM", temperature: "19°", weatherCode: 3, isDay: 1 },
+    { time: "7 PM", temperature: "18°", weatherCode: 61, isDay: 1 },
+    { time: "8 PM", temperature: "18°", weatherCode: 45, isDay: 0 },
+    { time: "9 PM", temperature: "17°", weatherCode: 63, isDay: 0 },
+    { time: "10 PM", temperature: "17°", weatherCode: 3, isDay: 0 },
   ],
   Wednesday: [
-    { time: "3 PM", temperature: "19°", icon: iconRain, condition: "Rain" },
-    { time: "4 PM", temperature: "19°", icon: iconRain, condition: "Rain" },
-    { time: "5 PM", temperature: "18°", icon: iconCloudy, condition: "Cloudy" },
-    {
-      time: "6 PM",
-      temperature: "18°",
-      icon: iconPartlyCloudy,
-      condition: "Partly cloudy",
-    },
-    { time: "7 PM", temperature: "17°", icon: iconCloudy, condition: "Cloudy" },
-    { time: "8 PM", temperature: "17°", icon: iconFog, condition: "Fog" },
-    { time: "9 PM", temperature: "16°", icon: iconRain, condition: "Rain" },
-    { time: "10 PM", temperature: "16°", icon: iconCloudy, condition: "Cloudy" },
+    { time: "3 PM", temperature: "19°", weatherCode: 63, isDay: 1 },
+    { time: "4 PM", temperature: "19°", weatherCode: 61, isDay: 1 },
+    { time: "5 PM", temperature: "18°", weatherCode: 3, isDay: 1 },
+    { time: "6 PM", temperature: "18°", weatherCode: 2, isDay: 1 },
+    { time: "7 PM", temperature: "17°", weatherCode: 3, isDay: 0 },
+    { time: "8 PM", temperature: "17°", weatherCode: 45, isDay: 0 },
+    { time: "9 PM", temperature: "16°", weatherCode: 80, isDay: 0 },
+    { time: "10 PM", temperature: "16°", weatherCode: 3, isDay: 0 },
   ],
   Thursday: [
-    { time: "3 PM", temperature: "24°", icon: iconSunny, condition: "Sunny" },
-    {
-      time: "4 PM",
-      temperature: "24°",
-      icon: iconPartlyCloudy,
-      condition: "Partly cloudy",
-    },
-    { time: "5 PM", temperature: "23°", icon: iconSunny, condition: "Sunny" },
-    { time: "6 PM", temperature: "22°", icon: iconSunny, condition: "Sunny" },
-    { time: "7 PM", temperature: "21°", icon: iconCloudy, condition: "Cloudy" },
-    { time: "8 PM", temperature: "20°", icon: iconCloudy, condition: "Cloudy" },
-    { time: "9 PM", temperature: "19°", icon: iconFog, condition: "Fog" },
-    { time: "10 PM", temperature: "18°", icon: iconCloudy, condition: "Cloudy" },
+    { time: "3 PM", temperature: "24°", weatherCode: 0, isDay: 1 },
+    { time: "4 PM", temperature: "24°", weatherCode: 2, isDay: 1 },
+    { time: "5 PM", temperature: "23°", weatherCode: 0, isDay: 1 },
+    { time: "6 PM", temperature: "22°", weatherCode: 0, isDay: 1 },
+    { time: "7 PM", temperature: "21°", weatherCode: 3, isDay: 0 },
+    { time: "8 PM", temperature: "20°", weatherCode: 3, isDay: 0 },
+    { time: "9 PM", temperature: "19°", weatherCode: 45, isDay: 0 },
+    { time: "10 PM", temperature: "18°", weatherCode: 3, isDay: 0 },
   ],
 };
 
@@ -63,14 +47,14 @@ const HourlyForecast = () => {
   const selectedForecast = hourlyForecastByDay[selectedDay];
 
   return (
-    <aside className="mt-8 w-full md:mt-5 md:ml-6 md:flex md:max-w-[19rem] xl:max-w-[20.5rem]">
+    <aside className="mt-8 w-full lg:mt-5 lg:ml-6 lg:flex lg:max-w-[19rem] xl:max-w-[20.5rem]">
       <div className="h-full w-full rounded-[1.75rem] border border-neutral-600/70 bg-neutral-800 p-4 shadow-[0_22px_55px_rgba(3,1,45,0.4)] md:p-5">
-        <div className="mb-4 flex items-start justify-between gap-3">
-          <h2 className="pt-2 text-lg font-semibold tracking-[0.01em] text-neutral-0">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <h2 className="text-lg font-semibold tracking-[0.01em] text-neutral-0 sm:pt-2">
             Hourly forecast
           </h2>
 
-          <div className="relative">
+          <div className="relative self-start sm:self-auto">
             <button
               type="button"
               onClick={() => setIsDropdownOpen((current) => !current)}
@@ -118,8 +102,8 @@ const HourlyForecast = () => {
             >
               <div className="flex items-center gap-3">
                 <img
-                  src={forecast.icon}
-                  alt={forecast.condition}
+                  src={getWeatherIcon(forecast.weatherCode, forecast.isDay).icon}
+                  alt={getWeatherCondition(forecast.weatherCode, forecast.isDay)}
                   className="h-8 w-8 object-contain"
                 />
                 <span className="text-base font-medium tracking-[0.01em]">
