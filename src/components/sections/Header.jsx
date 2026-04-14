@@ -4,7 +4,7 @@ import logo from "../../assets/images/logo.svg";
 import iconDropdown from "../../assets/images/icon-dropdown.svg";
 import UnitDropDown from "./UnitDropDown";
 
-const Header = () => {
+const Header = ({ unitSystem, setUnitSystem }) => {
   const [isUnitMenuOpen, setIsUnitMenuOpen] = useState(false);
 
   return (
@@ -18,7 +18,9 @@ const Header = () => {
             className="flex items-center gap-2 rounded-xl border border-neutral-600/80 bg-neutral-800 px-4 py-3 text-neutral-0 shadow-[0_10px_25px_rgba(3,1,45,0.35)] transition-colors hover:bg-neutral-700"
           >
             <img src={iconUnits} alt="" className="w-4" />
-            <span className="text-base font-medium tracking-[0.01em]">Units</span>
+            <span className="text-base font-medium tracking-[0.01em]">
+              Units
+            </span>
             <img
               src={iconDropdown}
               alt=""
@@ -28,7 +30,13 @@ const Header = () => {
             />
           </button>
 
-          {isUnitMenuOpen ? <UnitDropDown /> : null}
+          {isUnitMenuOpen ? (
+            <UnitDropDown
+              unitSystem={unitSystem}
+              setUnitSystem={setUnitSystem}
+              closeMenu={() => setIsUnitMenuOpen(false)}
+            />
+          ) : null}
         </div>
       </div>
     </header>

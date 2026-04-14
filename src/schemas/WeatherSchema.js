@@ -1,4 +1,3 @@
-
 import iconCloudy from "../assets/images/icon-overcast.webp";
 import iconDrizzle from "../assets/images/icon-drizzle.webp";
 import iconFog from "../assets/images/icon-fog.webp";
@@ -61,4 +60,94 @@ export function getWeatherIcon(weatherCode, isDay) {
   }
 
   return { icon: iconSunny, des: condition };
+}
+
+export function formatDailyForecast(daily) {
+  const data = daily.time.map((date, index) => ({
+    id: index + 1,
+    date: date.toLocaleDateString("en-US", { weekday: "short" }),
+    weatherCode: daily.weather_code[index],
+    icon: getWeatherIcon(daily.weather_code[index], 1),
+    maxTemperature: Math.round(daily.temperature_2m_max[index]),
+    minTemperature: Math.round(daily.temperature_2m_min[index]),
+    windSpeedMax: Math.round(daily.wind_speed_10m_max[index]),
+    windGustsMax: Math.round(daily.wind_gusts_10m_max[index]),
+  }));
+  return data;
+}
+
+export function formatHourlyForecast(hourly) {
+  const data = {};
+  for (let i = 0; i < hourly.time.length; i++) {
+    const date = hourly.time[i].toLocaleDateString("en-US", {
+      weekday: "short",
+    });
+    const hourData = {
+      time: hourly.time[i].toLocaleTimeString("en-US", {
+        hour: "numeric",
+        hour12: true,
+      }),
+      weatherCode: hourly.weather_code[i],
+      isDay: hourly.is_day[i],
+      icon: getWeatherIcon(hourly.weather_code[i], hourly.is_day[i]),
+      temperature: Math.round(hourly.temperature_2m[i]),
+    };
+
+    if (!Object.hasOwn(data, date)) {
+      data[date] = [];
+    }
+    data[date].push(hourData);
+  }
+  return data;
+}
+
+export function formatCurrentForecast(current) {
+  const data = {
+    time: current.time.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      hour12: true,
+    }),
+    temperature: Math.round(current.temperature_2m),
+    apparentTemperature: Math.round(current.apparent_temperature),
+    humidity: Math.round(current.relative_humidity_2m),
+    weatherCode: current.weather_code,
+    cloudCover: current.cloud_cover,
+    windSpeed: Math.round(current.wind_speed_10m),
+    dewPoint: Math.round(current.dew_point_2m),
+    uxIndex: Math.round(current.uv_index),
+    isDay: current.is_day,
+    precipitation: current.precipitation,
+    icon: getWeatherIcon(current.weather_code, current.is_day),
+  };
+  return data;
+}
+
+export function formatTemperature(value, unitSystem = "metric") {
+  if (value == null) return "--";
+
+  if (unitSystem === "imperial") {
+    return `${Math.round((value * 9) / 5 + 32)}°F`;
+  }
+
+  return `${Math.round(value)}°C`;
+}
+
+export function formatWindSpeed(value, unitSystem = "metric") {
+  if (value == null) return "--";
+
+  if (unitSystem === "imperial") {
+    return `${Math.round(value * 0.621371)} mph`;
+  }
+
+  return `${Math.round(value)} km/h`;
+}
+
+export function formatPrecipitation(value, unitSystem = "metric") {
+  if (value == null) return "--";
+
+  if (unitSystem === "imperial") {
+    return `${(value / 25.4).toFixed(2)} in`;
+  }
+
+  return `${value.toFixed(1)} mm`;
 }

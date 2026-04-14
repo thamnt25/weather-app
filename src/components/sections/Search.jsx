@@ -5,11 +5,11 @@ import {
   GeoapifyContext,
 } from "@geoapify/react-geocoder-autocomplete";
 import "@geoapify/geocoder-autocomplete/styles/minimal.css";
-import { getWeather } from "../../services/WeatherSercive";
+import { getWeather } from "../../services/WeatherService";
 
 const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
 
-const Search = () => {
+const Search = ({ setWeatherData, setIsLoading }) => {
   const [location, setLocation] = useState("");
 
   function onPlaceSelect(value) {
@@ -18,68 +18,17 @@ const Search = () => {
 
   async function searchWeather() {
     if (!location) return;
-    const res = await getWeather(location?.lat, location?.lon);
-    console.log(res);
-  }
 
-  //   {
-  //     "type": "Feature",
-  //     "properties": {
-  //         "country": "Canada",
-  //         "country_code": "ca",
-  //         "state": "Alberta",
-  //         "city": "Calgary",
-  //         "postcode": "T3H 2T1",
-  //         "suburb": "Strathcona Park",
-  //         "street": "Straddock Crescent SW",
-  //         "datasource": {
-  //             "sourcename": "openstreetmap",
-  //             "attribution": "© OpenStreetMap contributors",
-  //             "license": "Open Database License",
-  //             "url": "https://www.openstreetmap.org/copyright"
-  //         },
-  //         "state_code": "AB",
-  //         "lon": -114.1845258,
-  //         "lat": 51.0496697,
-  //         "housenumber": "84",
-  //         "result_type": "building",
-  //         "formatted": "84 Straddock Crescent SW, Calgary, AB T3H 2T1, Canada",
-  //         "address_line1": "84 Straddock Crescent SW",
-  //         "address_line2": "Calgary, AB T3H 2T1, Canada",
-  //         "timezone": {
-  //             "name": "America/Edmonton",
-  //             "offset_STD": "-07:00",
-  //             "offset_STD_seconds": -25200,
-  //             "offset_DST": "-06:00",
-  //             "offset_DST_seconds": -21600,
-  //             "abbreviation_STD": "MST",
-  //             "abbreviation_DST": "MDT"
-  //         },
-  //         "plus_code": "95372RX8+V5",
-  //         "plus_code_short": "2RX8+V5 Calgary, Alberta, Canada",
-  //         "iso3166_2": "CA-AB",
-  //         "rank": {
-  //             "confidence": 1,
-  //             "confidence_street_level": 1,
-  //             "confidence_building_level": 1,
-  //             "match_type": "full_match"
-  //         },
-  //         "place_id": "512b114d45cf8b5cc059138da4935b864940c00203e203266f70656e6164647265737365733a616464726573733a62363462326238343932363165633839"
-  //     },
-  //     "geometry": {
-  //         "type": "Point",
-  //         "coordinates": [
-  //             -114.1845258,
-  //             51.0496697
-  //         ]
-  //     },
-  //     "bbox": [
-  //         -114.1876542,
-  //         51.0495476,
-  //         -114.1844259,
-  //         51.0502934
-  //     ]
-  // }
+    setIsLoading(true);
+    const address = `${location?.city ? location?.city : location?.county}, ${location?.state ? location?.state : location?.country}`;
+
+    try {
+      const res = await getWeather(location?.lat, location?.lon, address);
+      setWeatherData(res);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   function onSuggectionChange(value) {
     console.log(value);

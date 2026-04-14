@@ -1,8 +1,13 @@
 import { fetchWeatherApi } from "openmeteo";
+import {
+  formatCurrentForecast,
+  formatHourlyForecast,
+  formatDailyForecast,
+} from "../schemas/WeatherSchema";
 
 const url = "https://api.open-meteo.com/v1/forecast";
 
-export async function getWeather(latitude, longitude) {
+export async function getWeather(latitude, longitude, address) {
   const params = {
     latitude,
     longitude,
@@ -108,7 +113,8 @@ export async function getWeather(latitude, longitude) {
     (_, i) => new Date(Number(sunsetValues.valuesInt64(i)) * 1000),
   );
 
-  return {
+  const weatherData = {
+    address: address,
     latitude: response.latitude(),
     longitude: response.longitude(),
     elevation: response.elevation(),
@@ -171,4 +177,11 @@ export async function getWeather(latitude, longitude) {
       sunshine_duration: daily.variables(15).valuesArray(),
     },
   };
+
+  console.log(weatherData);
+
+  weatherData.current = formatCurrentForecast(weatherData.current);
+  weatherData.hourly = formatHourlyForecast(weatherData.hourly);
+  weatherData.daily = formatDailyForecast(weatherData.daily);
+  return weatherData;
 }

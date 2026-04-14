@@ -1,50 +1,56 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import iconDropdown from "../../assets/images/icon-dropdown.svg";
 import {
+  formatTemperature,
   getWeatherCondition,
   getWeatherIcon,
 } from "../../schemas/WeatherSchema";
 
-const hourlyForecastByDay = {
-  Tuesday: [
-    { time: "3 PM", temperature: "20°", weatherCode: 3, isDay: 1 },
-    { time: "4 PM", temperature: "20°", weatherCode: 2, isDay: 1 },
-    { time: "5 PM", temperature: "20°", weatherCode: 0, isDay: 1 },
-    { time: "6 PM", temperature: "19°", weatherCode: 3, isDay: 1 },
-    { time: "7 PM", temperature: "18°", weatherCode: 61, isDay: 1 },
-    { time: "8 PM", temperature: "18°", weatherCode: 45, isDay: 0 },
-    { time: "9 PM", temperature: "17°", weatherCode: 63, isDay: 0 },
-    { time: "10 PM", temperature: "17°", weatherCode: 3, isDay: 0 },
-  ],
-  Wednesday: [
-    { time: "3 PM", temperature: "19°", weatherCode: 63, isDay: 1 },
-    { time: "4 PM", temperature: "19°", weatherCode: 61, isDay: 1 },
-    { time: "5 PM", temperature: "18°", weatherCode: 3, isDay: 1 },
-    { time: "6 PM", temperature: "18°", weatherCode: 2, isDay: 1 },
-    { time: "7 PM", temperature: "17°", weatherCode: 3, isDay: 0 },
-    { time: "8 PM", temperature: "17°", weatherCode: 45, isDay: 0 },
-    { time: "9 PM", temperature: "16°", weatherCode: 80, isDay: 0 },
-    { time: "10 PM", temperature: "16°", weatherCode: 3, isDay: 0 },
-  ],
-  Thursday: [
-    { time: "3 PM", temperature: "24°", weatherCode: 0, isDay: 1 },
-    { time: "4 PM", temperature: "24°", weatherCode: 2, isDay: 1 },
-    { time: "5 PM", temperature: "23°", weatherCode: 0, isDay: 1 },
-    { time: "6 PM", temperature: "22°", weatherCode: 0, isDay: 1 },
-    { time: "7 PM", temperature: "21°", weatherCode: 3, isDay: 0 },
-    { time: "8 PM", temperature: "20°", weatherCode: 3, isDay: 0 },
-    { time: "9 PM", temperature: "19°", weatherCode: 45, isDay: 0 },
-    { time: "10 PM", temperature: "18°", weatherCode: 3, isDay: 0 },
-  ],
-};
-
-const availableDays = Object.keys(hourlyForecastByDay);
-
-const HourlyForecast = () => {
-  const [selectedDay, setSelectedDay] = useState("Tuesday");
+const HourlyForecast = ({ hourData, unitSystem, isLoading }) => {
+  const availableDays = hourData ? Object.keys(hourData) : [];
+  const [selectedDay, setSelectedDay] = useState(availableDays[0]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const selectedForecast = hourlyForecastByDay[selectedDay];
+  useEffect(() => {
+    if (availableDays.length > 0 && !availableDays.includes(selectedDay)) {
+      setSelectedDay(availableDays[0]);
+    }
+  }, [availableDays, selectedDay]);
+
+  if (isLoading || !hourData || availableDays.length === 0) {
+    return (
+      <aside className="mt-8 w-full lg:mt-5 lg:ml-6 lg:flex lg:max-w-[19rem] xl:max-w-[20.5rem]">
+        <div className="h-full w-full rounded-[1.75rem] border border-neutral-600/70 bg-neutral-800 p-4 shadow-[0_22px_55px_rgba(3,1,45,0.4)] md:p-5">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <h2 className="text-lg font-semibold tracking-[0.01em] text-neutral-0 sm:pt-2">
+              Hourly forecast
+            </h2>
+
+            <div className="flex items-center gap-2 rounded-xl bg-neutral-700 px-3 py-2 text-sm font-medium text-neutral-0">
+              <span>--</span>
+              <img src={iconDropdown} alt="" className="w-3 rotate-180" />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {Array.from({ length: 8 }, (_, index) => (
+              <div
+                key={index}
+                className="h-[4.7rem] rounded-2xl border border-neutral-600/55 bg-neutral-700/90 px-4 py-3.5"
+              >
+                <div className="loading-shimmer h-full w-full rounded-xl" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </aside>
+    );
+  }
+
+  const activeDay = availableDays.includes(selectedDay)
+    ? selectedDay
+    : availableDays[0];
+  const selectedForecast = hourData[activeDay];
 
   return (
     <aside className="mt-8 w-full lg:mt-5 lg:ml-6 lg:flex lg:max-w-[19rem] xl:max-w-[20.5rem]">
@@ -60,7 +66,7 @@ const HourlyForecast = () => {
               onClick={() => setIsDropdownOpen((current) => !current)}
               className="flex items-center gap-2 rounded-xl bg-neutral-700 px-3 py-2 text-sm font-medium text-neutral-0 transition-colors hover:bg-neutral-600"
             >
-              <span>{selectedDay}</span>
+              <span>{activeDay}</span>
               <img
                 src={iconDropdown}
                 alt=""
@@ -81,7 +87,7 @@ const HourlyForecast = () => {
                       setIsDropdownOpen(false);
                     }}
                     className={`w-full rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${
-                      selectedDay === day
+                      activeDay === day
                         ? "bg-neutral-700 text-neutral-0"
                         : "text-neutral-200 hover:bg-neutral-700/80 hover:text-neutral-0"
                     }`}
@@ -97,13 +103,16 @@ const HourlyForecast = () => {
         <div className="space-y-3">
           {selectedForecast.map((forecast) => (
             <article
-              key={`${selectedDay}-${forecast.time}`}
+              key={`${activeDay}-${forecast.time}`}
               className="flex items-center justify-between rounded-2xl border border-neutral-600/55 bg-neutral-700/90 px-4 py-3.5 text-neutral-0 transition-colors hover:bg-neutral-600/95"
             >
               <div className="flex items-center gap-3">
                 <img
                   src={getWeatherIcon(forecast.weatherCode, forecast.isDay).icon}
-                  alt={getWeatherCondition(forecast.weatherCode, forecast.isDay)}
+                  alt={getWeatherCondition(
+                    forecast.weatherCode,
+                    forecast.isDay,
+                  )}
                   className="h-8 w-8 object-contain"
                 />
                 <span className="text-base font-medium tracking-[0.01em]">
@@ -112,7 +121,7 @@ const HourlyForecast = () => {
               </div>
 
               <span className="text-sm font-medium text-neutral-200">
-                {forecast.temperature}
+                {formatTemperature(forecast.temperature, unitSystem)}
               </span>
             </article>
           ))}
