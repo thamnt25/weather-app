@@ -1,8 +1,15 @@
 .hero-summary {
-  background-image: url("./assets/images/bg-today-small.svg");
+  /* background-image: url("./assets/images/bg-today-small.svg");
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat; */
+  /* background: #222f4d; */
+  background: linear-gradient(
+    90deg,
+    rgba(34, 47, 77, 1) 0%,
+    rgba(40, 69, 113, 1) 41%,
+    rgba(32, 76, 132, 1) 63%
+  );
 }
 
 .loading-shimmer {
@@ -155,8 +162,8 @@
   color: rgba(212, 212, 216, 0.78);
 }
 
-@media screen and (min-width: 768px) {
+/* @media screen and (min-width: 768px) {
   .hero-summary {
     background-image: url("./assets/images/bg-today-large.svg");
   }
-}
+} */

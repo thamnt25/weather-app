@@ -114,9 +114,11 @@ export function formatCurrentForecast(current) {
     cloudCover: current.cloud_cover,
     windSpeed: Math.round(current.wind_speed_10m),
     dewPoint: Math.round(current.dew_point_2m),
+    visibility: Math.round(current.visibility),
     uxIndex: Math.round(current.uv_index),
     isDay: current.is_day,
     precipitation: current.precipitation,
+    pressure: Math.round(current.pressure_msl),
     icon: getWeatherIcon(current.weather_code, current.is_day),
   };
   return data;
