@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   formatPrecipitation,
   formatTemperature,
@@ -32,7 +33,18 @@ const WeatherSummary = ({
   isLoading,
   latitude,
   longitude,
+  hourlyData,
+  setIsLoading,
 }) => {
+  const [weatherState, setWeatherState] = useState(1);
+  const [selectedDay, setSelectedDay] = useState(dailyData?.[0]?.date ?? null);
+
+  useEffect(() => {
+    if (dailyData?.length && !selectedDay) {
+      setSelectedDay(dailyData[0].date);
+    }
+  }, [dailyData, selectedDay]);
+
   if (isLoading || !currentData || !dailyData) {
     return (
       <div className="flex w-full flex-col">
@@ -142,7 +154,9 @@ const WeatherSummary = ({
               </span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-lg font-semibold text-white">Most Cloudy</span>
+              <span className="text-lg font-semibold text-white">
+                Most Cloudy
+              </span>
               <span className="text-sm text-white">Feel like 13</span>
             </div>
           </div>
@@ -206,8 +220,16 @@ const WeatherSummary = ({
         dailyData={dailyData}
         unitSystem={unitSystem}
         isLoading={isLoading}
+        weatherState={weatherState}
+        setWeatherState={setWeatherState}
+        selectedDay={selectedDay}
+        setSelectedDay={setSelectedDay}
       />
-      <ChartContainer />
+      <ChartContainer
+        hourlyData={hourlyData}
+        weatherState={weatherState}
+        selectedDay={selectedDay}
+      />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import iconSearch from "../../assets/images/icon-search.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   GeoapifyGeocoderAutocomplete,
   GeoapifyContext,
@@ -8,27 +8,89 @@ import "@geoapify/geocoder-autocomplete/styles/minimal.css";
 import { getWeather } from "../../services/WeatherService";
 
 const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
+const defaultLocationEnv = import.meta.env.VITE_DEFAULT_LOCATION;
+
+function parseDefaultLocation(value) {
+  if (!value) return null;
+
+  try {
+    const parsedValue = JSON.parse(value);
+    return parsedValue?.lat != null && parsedValue?.lon != null ? parsedValue : null;
+  } catch (error) {
+    console.error("Invalid VITE_DEFAULT_LOCATION value:", error);
+    return null;
+  }
+}
+
+function buildAddress(selectedLocation) {
+  return `${selectedLocation?.city ? selectedLocation.city : selectedLocation?.county}, ${selectedLocation?.state ? selectedLocation.state : selectedLocation?.country}`;
+}
 
 const Search = ({ setWeatherData, setIsLoading }) => {
-  const [location, setLocation] = useState("");
+  const [defaultLocation] = useState(() => parseDefaultLocation(defaultLocationEnv));
+  const [location, setLocation] = useState(defaultLocation);
 
   function onPlaceSelect(value) {
     setLocation(value?.properties);
   }
 
-  async function searchWeather() {
-    if (!location) return;
+  async function fetchWeatherForLocation(selectedLocation) {
+    if (!selectedLocation) return;
 
     setIsLoading(true);
-    const address = `${location?.city ? location?.city : location?.county}, ${location?.state ? location?.state : location?.country}`;
+    const address = buildAddress(selectedLocation);
 
     try {
-      const res = await getWeather(location?.lat, location?.lon, address);
+      const res = await getWeather(
+        selectedLocation?.lat,
+        selectedLocation?.lon,
+        address,
+      );
       setWeatherData(res);
+    } catch (e) {
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
   }
+
+  async function searchWeather() {
+    await fetchWeatherForLocation(location);
+  }
+
+  useEffect(() => {
+    if (!defaultLocation) return;
+
+    let isCancelled = false;
+
+    async function loadDefaultWeather() {
+      setIsLoading(true);
+
+      try {
+        const res = await getWeather(
+          defaultLocation.lat,
+          defaultLocation.lon,
+          buildAddress(defaultLocation),
+        );
+
+        if (!isCancelled) {
+          setWeatherData(res);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadDefaultWeather();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [defaultLocation, setIsLoading, setWeatherData]);
 
   function onSuggectionChange(value) {
     console.log(value);

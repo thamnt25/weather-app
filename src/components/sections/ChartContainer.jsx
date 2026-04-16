@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   AreaChart,
   Area,
@@ -7,29 +8,42 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-import cloudyIcon from "../../assets/images/icon-overcast.webp";
-import partlyCloudyIcon from "../../assets/images/icon-partly-cloudy.webp";
-import sunnyIcon from "../../assets/images/icon-sunny.webp";
+import { filterData } from "../../schemas/WeatherSchema";
 
-const data = [
-  { name: "12 AM", uv: 4000, icon: cloudyIcon },
-  { name: "2 AM", uv: 3000, icon: partlyCloudyIcon },
-  { name: "4 AM", uv: 2000, icon: partlyCloudyIcon },
-  { name: "6 AM", uv: 2200, icon: partlyCloudyIcon },
-  { name: "8 AM", uv: 3200, icon: cloudyIcon },
-  { name: "10 AM", uv: 3600, icon: sunnyIcon },
-  { name: "12 PM", uv: 3000, icon: sunnyIcon },
-];
+function getChartColor(value, weatherState) {
+  if (weatherState === 2) {
+    if (value < 3) return "#5cc8ff";
+    if (value < 6) return "#93d96b";
+    if (value < 8) return "#ffd166";
+    return "#ff8a65";
+  }
 
-function getUvColor(uv) {
-  if (uv < 2000) return "#394E6F";
-  if (uv < 3000) return "#415E64";
-  if (uv < 3500) return "#669784";
-  return "#FF8A65";
+  if (weatherState === 3) {
+    if (value < 10) return "#6dcff6";
+    if (value < 25) return "#56c596";
+    return "#ff9f43";
+  }
+
+  if (weatherState === 4) {
+    if (value < 40) return "#9dd6ff";
+    if (value < 70) return "#7fd1c8";
+    return "#4fb3bf";
+  }
+
+  if (weatherState === 5) {
+    if (value < 2000) return "#607d8b";
+    if (value < 6000) return "#7bc96f";
+    return "#b8e986";
+  }
+
+  if (value < 0) return "#394e6f";
+  if (value < 12) return "#669784";
+  if (value < 24) return "#b8e986";
+  return "#ffd166";
 }
 
-const CustomXAxisTick = ({ x, y, payload }) => {
-  const item = data.find((entry) => entry.name === payload.value);
+const CustomXAxisTick = ({ x, y, payload, chartData }) => {
+  const item = chartData.find((entry) => entry.time === payload.value);
 
   return (
     <g transform={`translate(${x},${y})`}>
@@ -37,15 +51,15 @@ const CustomXAxisTick = ({ x, y, payload }) => {
         <image
           x={0}
           y={0}
-          href={item.icon}
-          width={32}
-          height={32}
+          href={item.icon.icon}
+          width={28}
+          height={28}
           preserveAspectRatio="xMidYMid meet"
         />
       )}
       <text
-        x={50}
-        y={24}
+        x={14}
+        y={44}
         textAnchor="middle"
         fill="#64748b"
         fontSize={12}
@@ -57,7 +71,13 @@ const CustomXAxisTick = ({ x, y, payload }) => {
   );
 };
 
-const ChartContainer = () => {
+const ChartContainer = ({ hourlyData, weatherState, selectedDay }) => {
+  const chartData = filterData(hourlyData, weatherState, selectedDay);
+  console.log(chartData);
+  if (!selectedDay || !chartData.length) {
+    return null;
+  }
+
   return (
     <div style={{ width: "100%", height: "360px" }} className="mt-4 relative">
       <button
@@ -105,7 +125,7 @@ const ChartContainer = () => {
       </button>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
-          data={data}
+          data={chartData}
           margin={{
             top: 40,
             right: 30,
@@ -115,11 +135,11 @@ const ChartContainer = () => {
         >
           <defs>
             <linearGradient id="uvGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              {data.map((item, index) => (
+              {chartData.map((item, index) => (
                 <stop
-                  key={item.name}
-                  offset={`${(index / (data.length - 1)) * 100}%`}
-                  stopColor={getUvColor(item.uv)}
+                  key={`${item.time}-${index}`}
+                  offset={`${(index / Math.max(chartData.length - 1, 1)) * 100}%`}
+                  stopColor={getChartColor(item.value, weatherState)}
                   stopOpacity={1}
                 />
               ))}
@@ -127,15 +147,16 @@ const ChartContainer = () => {
           </defs>
 
           <XAxis
-            dataKey="name"
+            dataKey="time"
             interval={0}
             tickLine={false}
             axisLine={false}
-            height={40}
-            tick={<CustomXAxisTick />}
+            height={52}
+            tick={(props) => (
+              <CustomXAxisTick {...props} chartData={chartData} />
+            )}
           />
           <YAxis
-            dataKey="uv"
             tick={{ fill: "#64748b", fontSize: 12, fontWeight: 600 }}
             axisLine={{ stroke: "#cbd5e1" }}
           />
@@ -143,7 +164,7 @@ const ChartContainer = () => {
           <CartesianGrid strokeDasharray="1 1" />
           <Area
             type="monotone"
-            dataKey="uv"
+            dataKey="value"
             stroke="#7BC96F"
             fill="url(#uvGradient)"
             fillOpacity={1}

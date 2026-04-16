@@ -1,6 +1,10 @@
 import WeatherSummary from "./WeatherSummary";
 
-const WeatherReport = ({ weatherData, unitSystem, isLoading}) => {
+const WeatherReport = ({
+  weatherData,
+  unitSystem,
+  isLoading
+}) => {
   return (
     <>
       <section>
@@ -14,6 +18,7 @@ const WeatherReport = ({ weatherData, unitSystem, isLoading}) => {
               isLoading={isLoading}
               latitude={weatherData?.latitude}
               longitude={weatherData?.longitude}
+              hourlyData={weatherData?.hourly}
             />
           </div>
         </div>

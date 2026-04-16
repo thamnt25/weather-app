@@ -7,6 +7,8 @@ import iconSnow from "../assets/images/icon-snow.webp";
 import iconStorm from "../assets/images/icon-storm.webp";
 import iconSunny from "../assets/images/icon-sunny.webp";
 
+const shiftedTimeZone = "UTC";
+
 export function getWeatherCondition(weatherCode, isDay) {
   if (weatherCode === 0) return isDay ? "sunny" : "clear-night";
   if ([1].includes(weatherCode)) return isDay ? "mostly-sunny" : "mostly-clear";
@@ -65,7 +67,10 @@ export function getWeatherIcon(weatherCode, isDay) {
 export function formatDailyForecast(daily) {
   const data = daily.time.map((date, index) => ({
     id: index + 1,
-    date: date.toLocaleDateString("en-US", { weekday: "short" }),
+    date: date.toLocaleDateString("en-US", {
+      weekday: "short",
+      timeZone: shiftedTimeZone,
+    }),
     weatherCode: daily.weather_code[index],
     icon: getWeatherIcon(daily.weather_code[index], 1),
     maxTemperature: Math.round(daily.temperature_2m_max[index]),
@@ -81,16 +86,22 @@ export function formatHourlyForecast(hourly) {
   for (let i = 0; i < hourly.time.length; i++) {
     const date = hourly.time[i].toLocaleDateString("en-US", {
       weekday: "short",
+      timeZone: shiftedTimeZone,
     });
     const hourData = {
       time: hourly.time[i].toLocaleTimeString("en-US", {
         hour: "numeric",
         hour12: true,
+        timeZone: shiftedTimeZone,
       }),
       weatherCode: hourly.weather_code[i],
       isDay: hourly.is_day[i],
       icon: getWeatherIcon(hourly.weather_code[i], hourly.is_day[i]),
       temperature: Math.round(hourly.temperature_2m[i]),
+      ux: Math.round(hourly.uv_index[i]),
+      visibility: Math.round(hourly.visibility[i]),
+      humidity: Math.round(hourly.relative_humidity_2m[i]),
+      windSpeed: Math.round(hourly.wind_speed_10m[i]),
     };
 
     if (!Object.hasOwn(data, date)) {
@@ -106,6 +117,7 @@ export function formatCurrentForecast(current) {
     time: current.time.toLocaleTimeString("en-US", {
       hour: "numeric",
       hour12: true,
+      timeZone: shiftedTimeZone,
     }),
     temperature: Math.round(current.temperature_2m),
     apparentTemperature: Math.round(current.apparent_temperature),
@@ -152,4 +164,49 @@ export function formatPrecipitation(value, unitSystem = "metric") {
   }
 
   return `${value.toFixed(1)} mm`;
+}
+
+export function filterData(hourlyData, weatherState, selectedDay) {
+  const allDataByDay = hourlyData?.[selectedDay] ?? [];
+  if (weatherState === 1) {
+    return allDataByDay.map((data) => ({
+      icon: data.icon,
+      value: data.temperature,
+      time: data.time,
+    }));
+  }
+
+  if (weatherState === 2) {
+    return allDataByDay.map((data) => ({
+      icon: data.icon,
+      value: data.ux,
+      time: data.time,
+    }));
+  }
+
+  if (weatherState === 3) {
+    return allDataByDay.map((data) => ({
+      icon: data.icon,
+      value: data.windSpeed,
+      time: data.time,
+    }));
+  }
+
+  if (weatherState === 4) {
+    return allDataByDay.map((data) => ({
+      icon: data.icon,
+      value: data.humidity,
+      time: data.time,
+    }));
+  }
+
+  if (weatherState === 5) {
+    return allDataByDay.map((data) => ({
+      icon: data.icon,
+      value: data.visibility,
+      time: data.time,
+    }));
+  }
+
+  return [];
 }

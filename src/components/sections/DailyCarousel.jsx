@@ -12,13 +12,18 @@ const controlButtons = [
   { id: 1, control: "Overview" },
   { id: 2, control: "Precipitation" },
   { id: 3, control: "Wind" },
-  { id: 4, control: "Air Quality" },
-  { id: 5, control: "Humidity" },
-  { id: 6, control: "Feels like" },
-  { id: 6, control: "Visibility" },
+  { id: 4, control: "Humidity" },
+  { id: 5, control: "Visibility" },
 ];
 
-const DailyCarousel = ({ dailyData = [], unitSystem }) => {
+const DailyCarousel = ({
+  dailyData = [],
+  unitSystem,
+  weatherState,
+  setWeatherState,
+  selectedDay,
+  setSelectedDay,
+}) => {
   const [cardsPerView, setCardsPerView] = useState(() =>
     typeof window === "undefined" ? 2 : getCardsPerView(window.innerWidth),
   );
@@ -66,8 +71,13 @@ const DailyCarousel = ({ dailyData = [], unitSystem }) => {
             Daily Forecast
           </span>
           <div className="flex flex-row gap-3">
-            {controlButtons.map((action, index) => (
-              <button className="rounded-2xl border border-neutral-600/80 bg-neutral-800 text-white text-sm py-2 px-3 font-semibold">
+            {controlButtons.map((action) => (
+              <button
+                key={action.id}
+                type="button"
+                className={`rounded-2xl border border-neutral-600/80 ${weatherState === action.id ? "bg-transparent" : "bg-neutral-800"} text-white text-sm py-2 px-3 font-semibold hover:bg-neutral-700`}
+                onClick={() => setWeatherState(action.id)}
+              >
                 {action.control}
               </button>
             ))}
@@ -124,7 +134,8 @@ const DailyCarousel = ({ dailyData = [], unitSystem }) => {
         {visibleDays.map((day) => (
           <button
             key={day.id}
-            className="flex min-w-0 flex-col items-center gap-4 rounded-2xl bg-neutral-800 px-4 py-4 text-white"
+            className={`flex min-w-0 flex-col items-center gap-4 rounded-2xl ${selectedDay === day.date ? "bg-transparent" : "bg-neutral-800"} border border-neutral-600/80 px-4 py-4 text-white`}
+            onClick={() => setSelectedDay(day.date)}
           >
             <span className="text-base font-medium">{day.date}</span>
             <img

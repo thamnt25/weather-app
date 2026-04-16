@@ -178,8 +178,6 @@ export async function getWeather(latitude, longitude, address) {
     },
   };
 
-  console.log(weatherData);
-
   weatherData.current = formatCurrentForecast(weatherData.current);
   weatherData.hourly = formatHourlyForecast(weatherData.hourly);
   weatherData.daily = formatDailyForecast(weatherData.daily);
