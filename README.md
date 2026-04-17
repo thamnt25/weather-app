@@ -24,35 +24,6 @@ A React weather dashboard built with Vite, Tailwind CSS, Open-Meteo, Geoapify au
 - Recharts
 - React Leaflet
 
-## Getting Started
-
-### 1. Install dependencies
-
-```bash
-npm install
-```
-
-### 2. Create `.env.local`
-
-Add the following variables:
-
-```env
-VITE_GEOAPIFY_API_KEY="your_geoapify_api_key"
-VITE_URL="https://open-meteo.com"
-VITE_DEFAULT_LOCATION={"address":"Delia, Alberta","county":"Delia","country":"Canada","lat":51.63892364501953,"lon":-112.36077117919922}
-```
-
-Notes:
-- `VITE_DEFAULT_LOCATION` must be valid JSON on a single line.
-- `lat` and `lon` are required.
-- `city`, `county`, `state`, and `country` are used to build the display address.
-
-### 3. Start the development server
-
-```bash
-npm run dev
-```
-
 ## Available Scripts
 
 - `npm run dev` starts the Vite dev server
