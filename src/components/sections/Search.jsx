@@ -98,7 +98,7 @@ const Search = ({ setWeatherData, setIsLoading }) => {
 
   return (
     <>
-      <section className="mt-10 flex flex-col gap-8 px-6 md:px-10 xl:mt-14 xl:items-center xl:px-0">
+      <section className="mt-10 flex flex-col gap-8 px-6 md:px-10 xl:mt-14 items-center xl:px-0">
         <span className="text-center text-4xl font-bold text-white xl:text-5xl">
           How&apos;s the sky looking today?
         </span>

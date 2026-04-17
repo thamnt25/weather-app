@@ -65,17 +65,17 @@ const DailyCarousel = ({
 
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex flex-row gap-5">
-          <span className="text-xl font-semibold text-white">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between lg:flex-1">
+          <span className="text-xl font-semibold text-white sm:shrink-0">
             Daily Forecast
           </span>
-          <div className="flex flex-row gap-3">
+          <div className="flex min-w-0 gap-3 overflow-x-auto pb-1 sm:flex-1 sm:justify-end">
             {controlButtons.map((action) => (
               <button
                 key={action.id}
                 type="button"
-                className={`rounded-2xl border border-neutral-600/80 ${weatherState === action.id ? "bg-transparent" : "bg-neutral-800"} text-white text-sm py-2 px-3 font-semibold hover:bg-neutral-700`}
+                className={`shrink-0 rounded-2xl border border-neutral-600/80 ${weatherState === action.id ? "bg-transparent" : "bg-neutral-800"} px-3 py-2 text-sm font-semibold text-white hover:bg-neutral-700`}
                 onClick={() => setWeatherState(action.id)}
               >
                 {action.control}
@@ -83,7 +83,7 @@ const DailyCarousel = ({
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
             aria-label="Show previous daily forecast"
@@ -130,11 +130,11 @@ const DailyCarousel = ({
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:flex sm:flex-row sm:gap-5">
         {visibleDays.map((day) => (
           <button
             key={day.id}
-            className={`flex min-w-0 flex-col items-center gap-4 rounded-2xl ${selectedDay === day.date ? "bg-transparent" : "bg-neutral-800"} border border-neutral-600/80 px-4 py-4 text-white`}
+            className={`flex min-w-0 flex-1 flex-col items-center gap-4 rounded-2xl border border-neutral-600/80 px-3 py-4 text-white sm:px-4 ${selectedDay === day.date ? "bg-transparent" : "bg-neutral-800"}`}
             onClick={() => setSelectedDay(day.date)}
           >
             <span className="text-base font-medium">{day.date}</span>
@@ -143,7 +143,7 @@ const DailyCarousel = ({
               alt={`${day.date} weather`}
               className="h-10 w-10"
             />
-            <div className="flex w-full justify-between gap-2">
+            <div className="flex w-full items-center justify-between gap-2">
               <span className="text-base">
                 {formatTemperature(day.maxTemperature, unitSystem)}
               </span>

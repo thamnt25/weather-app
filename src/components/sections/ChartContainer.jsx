@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
   AreaChart,
   Area,
@@ -42,27 +42,33 @@ function getChartColor(value, weatherState) {
   return "#ffd166";
 }
 
-const CustomXAxisTick = ({ x, y, payload, chartData }) => {
+const MOBILE_BREAKPOINT = 640;
+
+const CustomXAxisTick = ({ x, y, payload, chartData, isCompact }) => {
   const item = chartData.find((entry) => entry.time === payload.value);
+  const iconSize = isCompact ? 22 : 28;
+  const textOffset = isCompact ? 36 : 44;
+  const textSize = isCompact ? 10 : 12;
+  const iconOffset = -(iconSize / 2);
 
   return (
     <g transform={`translate(${x},${y})`}>
       {item?.icon && (
         <image
-          x={0}
+          x={iconOffset}
           y={0}
           href={item.icon.icon}
-          width={28}
-          height={28}
+          width={iconSize}
+          height={iconSize}
           preserveAspectRatio="xMidYMid meet"
         />
       )}
       <text
-        x={14}
-        y={44}
+        x={0}
+        y={textOffset}
         textAnchor="middle"
         fill="#64748b"
-        fontSize={12}
+        fontSize={textSize}
         fontWeight={500}
       >
         {payload.value}
@@ -72,65 +78,41 @@ const CustomXAxisTick = ({ x, y, payload, chartData }) => {
 };
 
 const ChartContainer = ({ hourlyData, weatherState, selectedDay }) => {
+  const [isCompact, setIsCompact] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < MOBILE_BREAKPOINT : false,
+  );
   const chartData = filterData(hourlyData, weatherState, selectedDay);
-  console.log(chartData);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsCompact(window.innerWidth < MOBILE_BREAKPOINT);
+    }
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   if (!selectedDay || !chartData.length) {
     return null;
   }
 
-  return (
-    <div style={{ width: "100%", height: "360px" }} className="mt-4 relative">
-      <button
-        type="button"
-        aria-label="Show previous hours"
-        // onClick={showPrevious}
-        // disabled={startIndex === 0}
-        className="absolute left-12 top-1/2 z-20 flex h-10 w-6 -translate-y-1/2 items-center justify-center rounded-xl border border-neutral-600/55 bg-neutral-800 text-slate-800 shadow-[0_8px_20px_rgba(15,23,42,0.12)] disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        <svg
-          className="h-4 w-4"
-          viewBox="0 0 24 24"
-          fill="white"
-          stroke="currentColor"
-        >
-          <path
-            d="M15 19l-7-7 7-7"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
+  const tickInterval = isCompact
+    ? Math.max(Math.ceil(chartData.length / 6) - 1, 0)
+    : Math.max(Math.ceil(chartData.length / 8) - 1, 0);
 
-      <button
-        type="button"
-        aria-label="Show next hours"
-        // onClick={showNext}
-        // disabled={startIndex === maxStartIndex}
-        className="absolute right-3 top-1/2 z-20 flex h-10 w-6 -translate-y-1/2 items-center justify-center rounded-xl rounded-xl border border-neutral-600/55 bg-neutral-800 text-slate-800 shadow-[0_8px_20px_rgba(15,23,42,0.12)] disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        <svg
-          className="h-4 w-4"
-          viewBox="0 0 24 24"
-          fill="white"
-          stroke="currentColor"
-        >
-          <path
-            d="M9 5l7 7-7 7"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
-      <ResponsiveContainer width="100%" height="100%">
+  return (
+    <div className="mt-4 min-w-0 rounded-[1.5rem] border border-neutral-600/55 bg-neutral-800/95 p-3 shadow-[0_18px_40px_rgba(3,1,45,0.24)] sm:p-4">
+      <div className="h-[280px] w-full sm:h-[320px] lg:h-[360px]">
+        <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={chartData}
           margin={{
-            top: 40,
-            right: 30,
-            left: 0,
-            bottom: 60,
+            top: 20,
+            right: isCompact ? 8 : 18,
+            left: isCompact ? -24 : -12,
+            bottom: isCompact ? 46 : 56,
           }}
         >
           <defs>
@@ -148,17 +130,24 @@ const ChartContainer = ({ hourlyData, weatherState, selectedDay }) => {
 
           <XAxis
             dataKey="time"
-            interval={0}
+            interval={tickInterval}
             tickLine={false}
             axisLine={false}
-            height={52}
+            minTickGap={isCompact ? 24 : 16}
+            height={isCompact ? 44 : 52}
             tick={(props) => (
-              <CustomXAxisTick {...props} chartData={chartData} />
+              <CustomXAxisTick
+                {...props}
+                chartData={chartData}
+                isCompact={isCompact}
+              />
             )}
           />
           <YAxis
-            tick={{ fill: "#64748b", fontSize: 12, fontWeight: 600 }}
-            axisLine={{ stroke: "#cbd5e1" }}
+            width={isCompact ? 34 : 44}
+            tick={{ fill: "#64748b", fontSize: isCompact ? 10 : 12, fontWeight: 600 }}
+            axisLine={false}
+            tickLine={false}
           />
           <Tooltip />
           <CartesianGrid strokeDasharray="1 1" />
@@ -170,7 +159,8 @@ const ChartContainer = ({ hourlyData, weatherState, selectedDay }) => {
             fillOpacity={1}
           />
         </AreaChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

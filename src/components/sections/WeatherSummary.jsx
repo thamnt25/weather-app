@@ -135,7 +135,7 @@ const WeatherSummary = ({
 
   return (
     <div className="flex w-full flex-col p-3">
-      <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="mt-5">
         <div className="hero-summary flex flex-col rounded-md p-3 lg:col-span-2">
           <div className="flex flex-col items-center text-white lg:items-start">
             <span className="text-xl font-semibold">{address}</span>
@@ -160,13 +160,7 @@ const WeatherSummary = ({
               <span className="text-sm text-white">Feel like 13</span>
             </div>
           </div>
-          <div className="flex items-center py-4">
-            <span className="text-base text-white">
-              Cloudy conditions will continue all day. Wind gusts are upto 22
-              km/h
-            </span>
-          </div>
-          <div className="grid grid-cols-3 lg:grid-cols-6 items-center">
+          <div className="grid grid-cols-3 lg:grid-cols-6 items-center gap-3 mt-5">
             {weatherDetails.map((detail) => (
               <div key={detail.id} className="flex flex-col items-center">
                 <div className="flex flex-row items-center gap-2">
@@ -204,7 +198,7 @@ const WeatherSummary = ({
             ))}
           </div>
         </div>
-        <div className="lg:col-span-1">
+        {/* <div className="lg:col-span-1">
           <WeatherMap
             address={address}
             latitude={latitude}
@@ -213,7 +207,7 @@ const WeatherSummary = ({
             unitSystem={unitSystem}
             isLoading={isLoading}
           />
-        </div>
+        </div> */}
       </div>
 
       <DailyCarousel
