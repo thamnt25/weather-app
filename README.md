@@ -29,13 +29,12 @@ A React weather dashboard built with Vite, Tailwind CSS, Open-Meteo, Geoapify au
 - `npm run dev` starts the Vite dev server
 - `npm run build` creates a production build
 - `npm run preview` previews the production build locally
-- `npm run lint` runs ESLint
 
 ## Data Sources
 
 ### Weather Data
 
-Weather data comes from [Open-Meteo](https://open-meteo.com/). No API key is required for forecast requests used by this app.
+Weather data comes from the Open-Meteo forecast API. No API key is required for the forecast requests used by this app.
 
 ### Location Search
 
