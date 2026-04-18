@@ -2,7 +2,7 @@
 
 A React weather dashboard built with Vite, Tailwind CSS, Open-Meteo, Geoapify autocomplete, Recharts, and Leaflet.
 
-![Design preview for the Weather app](./preview.jpg)
+**Live Demo**: https://weatherapp-2026.netlify.app/
 
 ## Features
 
